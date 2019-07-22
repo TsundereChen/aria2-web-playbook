@@ -1,0 +1,39 @@
+- name: Install aria2
+  apt:
+      name: aria2
+      state: present
+
+- name: Install sudo
+  apt:
+      name: sudo
+      state: present
+
+- name: Create aria2 configuration folder under www-data's home
+  file:
+      path: /home/www-data/.aria2
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: '0775'
+
+- name: Install aria2 configuration
+  template:
+      src: aria2.conf.j2
+      dest: /home/www-data/.aria2/aria2.conf
+      owner: www-data
+      group: www-data
+      mode: '0440'
+
+- name: Create aria2.session file
+  file:
+      path: /home/www-data/.aria2/aria2.session
+      state: touch
+      owner: www-data
+      group: www-data
+      mode: '0660'
+
+- name: Install aria2 into cron
+  cron:
+      name: "Autostart aria2 when booted up"
+      special_time: reboot
+      job: "sudo -u www-data HOME=/home/www-data aria2c"

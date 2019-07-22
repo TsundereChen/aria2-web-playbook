@@ -1,0 +1,7 @@
+aria2-web:
+  hosts:
+    <DOMAIN/IP>:
+      domain: <DOMAIN>
+      email: <EMAIL>
+  vars:
+    ansible_user: root

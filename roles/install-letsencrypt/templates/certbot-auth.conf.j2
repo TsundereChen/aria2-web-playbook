@@ -1,0 +1,14 @@
+server {
+        listen 80;
+
+        server_name {{ domain }};
+
+        index index.html;
+        root /www/{{ domain }};
+
+        location ~ {}
+
+        location ~/.well-known {
+                allow all;
+        }
+}

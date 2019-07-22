@@ -1,0 +1,62 @@
+- name: Install ppa:certbot
+  apt_repository:
+      repo: ppa:certbot/certbot
+      state: present
+
+- name: Update apt cache
+  apt:
+      update_cache: yes
+
+- name: Install certbot for nginx
+  apt:
+      name: "{{ certbot }}"
+      state: present
+  vars:
+      certbot:
+          - certbot
+          - python-certbot-nginx
+
+- name: Remove old aria-ng nginx configuration file
+  file:
+      path: /etc/nginx/conf.d/{{ domain}}.conf
+      state: absent
+
+- name: Install temporary nginx configuration file for certbot authentication
+  template:
+      src: certbot-auth.conf.j2
+      dest: /etc/nginx/conf.d/{{ domain }}.conf
+      owner: www-data
+      group: www-data
+      mode: '0444'
+
+- name: Reload nginx
+  systemd:
+      name: nginx
+      state: reloaded
+
+      #- name: Generate Let's Encrypt certificate
+      #  command: certbot certonly --rsa-key-size 4096 --webroot --agree-tos --email {{ email }} -w /www/{{ domain }} -d {{ domain }} 
+
+- name: Install new nginx configuration file
+  template:
+      src: aria-ng.letsencrypt.conf.j2
+      dest: /etc/nginx/conf.d/{{ domain }}.conf
+      owner: www-data
+      group: www-data
+      mode: '0444'
+
+- name: Install nginx secure cipher configuration
+  template:
+      src: ssl-options.conf.j2
+      dest: /etc/nginx/ssl-options.conf
+      owner: www-data
+      group: www-data
+      mode: '0444'
+
+      #- name: Create dhparam.pem
+  #  command: openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 4096
+
+- name: Reload nginx
+  systemd:
+      name: nginx
+      state: reloaded

@@ -1,0 +1,38 @@
+- name: Install nginx
+  apt:
+      name: nginx
+      state: present
+
+- name: Install snakeoil ssl-cert
+  apt:
+      name: ssl-cert
+      state: present
+
+- name: Create /www folder for nginx
+  file:
+      path: /www
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: '0775'
+
+- name: Create /home/www-data folder for aria2
+  file:
+      path: /home/www-data
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: '0775'
+
+- name: Copy nginx conf into nginx folder
+  template:
+      src: aria-ng.conf.j2
+      dest: /etc/nginx/conf.d/{{ domain }}.conf
+      owner: www-data
+      group: www-data
+      mode: '0444'
+
+- name: Reload nginx
+  systemd:
+      name: nginx
+      state: reloaded

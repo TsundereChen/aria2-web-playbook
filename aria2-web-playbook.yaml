@@ -1,0 +1,11 @@
+- hosts: aria2-web
+  name: Install aria2 on target machine
+  gather_facts: no
+  become: true
+  roles:
+      - apt-upgrade
+      - install-nginx
+      - install-aria2
+      - install-ariang
+      - install-letsencrypt
+      - reboot

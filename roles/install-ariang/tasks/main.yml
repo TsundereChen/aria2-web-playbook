@@ -1,0 +1,45 @@
+- name: Install unzip from apt
+  apt:
+      name: unzip
+      state: present
+
+- name: Download Aria-ng
+  get_url:
+      url: https://github.com/mayswind/AriaNg/releases/download/1.1.1/AriaNg-1.1.1-AllInOne.zip
+      dest: /tmp/ariang.zip
+
+- name: Unzip downloaded file
+  unarchive:
+      src: /tmp/ariang.zip
+      dest: /tmp
+      remote_src: yes
+
+- name: Create download site's folder under /www
+  file:
+      path: /www/{{ domain }}
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: '0775'
+
+- name: Move index.html to download site's folder
+  copy:
+      src: /tmp/index.html
+      dest: /www/{{ domain }}/index.html
+      remote_src: yes
+      owner: www-data
+      group: www-data
+      mode: '0444'
+
+- name: Create download folder in /www/{{domain}}
+  file:
+      path: /www/{{ domain }}/downloads
+      state: directory
+      owner: www-data
+      group: www-data
+      mode: '0775'
+
+- name: Uninstall unzip
+  apt:
+      name: unzip
+      state: absent
