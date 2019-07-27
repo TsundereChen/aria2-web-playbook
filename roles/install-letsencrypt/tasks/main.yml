@@ -1,3 +1,13 @@
+- name: Install apt-repo dependencies
+  apt:
+      name: "{{ packages }}"
+      state: present
+  vars:
+      packages:
+          - gnupg2
+          - dirmngr
+          - software-properties-common
+
 - name: Install ppa:certbot
   apt_repository:
       repo: ppa:certbot/certbot
@@ -14,28 +24,28 @@
   vars:
       certbot:
           - certbot
-          - python-certbot-nginx
+          - python3-certbot-dns-cloudflare
 
 - name: Remove old aria-ng nginx configuration file
   file:
       path: /etc/nginx/conf.d/{{ domain}}.conf
       state: absent
 
-- name: Install temporary nginx configuration file for certbot authentication
+- name: Install CloudFlare credential
   template:
-      src: certbot-auth.conf.j2
-      dest: /etc/nginx/conf.d/{{ domain }}.conf
-      owner: www-data
-      group: www-data
-      mode: '0444'
+      src: cloudflare.ini.j2
+      dest: /root/.cloudflare.ini
+      owner: root
+      group: root
+      mode: '0400'
 
-- name: Reload nginx
-  systemd:
-      name: nginx
-      state: reloaded
+- name: Generate Let's Encrypt certificate
+  command: certbot certonly --dns-cloudflare --dns-cloudflare-credentials /root/.cloudflare.ini --rsa-key-size 4096 --agree-tos --email {{ email }} -d {{ domain }} 
 
-      #- name: Generate Let's Encrypt certificate
-      #  command: certbot certonly --rsa-key-size 4096 --webroot --agree-tos --email {{ email }} -w /www/{{ domain }} -d {{ domain }} 
+- name: Remove CloudFlare credential
+  file:
+      path: /root/.cloudflare.ini
+      state: absent
 
 - name: Install new nginx configuration file
   template:
@@ -53,8 +63,8 @@
       group: www-data
       mode: '0444'
 
-      #- name: Create dhparam.pem
-  #  command: openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 4096
+- name: Create dhparam.pem
+  command: openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 4096
 
 - name: Reload nginx
   systemd:
