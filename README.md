@@ -4,6 +4,7 @@ This is an Ansible Playbook to help you create your own aria2 download site
 
 ## Usage
 * You should run this playbook on `Ubuntu`
+* Let's Encrypt uses **CloudFlare** to get HTTPS certificate, if you do not use CloudFlare as DNS manager, don't use `install-letsencrypt` role
 * Need to enable `universe` repo in `apt` first
 * Copy `inventory.sample` to `inventory`, then modify content according to the file
 * `ansible-playbook -i inventory aria2-web-playbook.yaml`
