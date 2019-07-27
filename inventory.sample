@@ -3,5 +3,7 @@ aria2-web:
     <DOMAIN/IP>:
       domain: <DOMAIN>
       email: <EMAIL>
+      dns_cloudflare_email: <EMAIL>
+      dns_cloudflare_api_key: <API_KEY>
   vars:
     ansible_user: root
