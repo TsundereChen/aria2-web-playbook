@@ -1,30 +1,8 @@
-- name: Install apt-repo dependencies
-  apt:
-      name: "{{ packages }}"
-      state: present
-  vars:
-      packages:
-          - gnupg2
-          - dirmngr
-          - software-properties-common
-
-- name: Install ppa:certbot
-  apt_repository:
-      repo: ppa:certbot/certbot
-      state: present
-
-- name: Update apt cache
-  apt:
-      update_cache: yes
-
-- name: Install certbot for nginx
-  apt:
-      name: "{{ certbot }}"
-      state: present
-  vars:
-      certbot:
-          - certbot
-          - python3-certbot-dns-cloudflare
+- name: pip install certbot
+  pip:
+    name:
+      - certbot
+      - certbot-dns-cloudflare
 
 - name: Remove old aria-ng nginx configuration file
   file:
@@ -64,7 +42,7 @@
       mode: '0444'
 
 - name: Create dhparam.pem
-  command: openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 4096
+  command: openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
 
 - name: Reload nginx
   systemd:
