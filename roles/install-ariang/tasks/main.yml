@@ -5,7 +5,7 @@
 
 - name: Download Aria-ng
   get_url:
-      url: https://github.com/mayswind/AriaNg/releases/download/1.1.1/AriaNg-1.1.1-AllInOne.zip
+      url: https://github.com/mayswind/AriaNg/releases/download/1.2.3/AriaNg-1.2.3-AllInOne.zip
       dest: /tmp/ariang.zip
 
 - name: Unzip downloaded file
